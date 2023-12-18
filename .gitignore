@@ -12,7 +12,18 @@ bin-release/
 *.air
 *.ipa
 *.apk
-
+/node_modules
+/.env.local
+/.umirc.local.ts
+/config/config.local.ts
+/src/.umi
+/src/.umi-production
+/.umi
+/.umi-production
+/.umi-test
+/dist
+/.mfsu
+.idea
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
