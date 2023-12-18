@@ -2,6 +2,7 @@ import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import React from 'react';
+import './index.less';
 
 const GlobalFooter: React.FC = () => {
   const intl = useIntl();
@@ -14,7 +15,7 @@ const GlobalFooter: React.FC = () => {
 
   return (
     <DefaultFooter
-
+      className="default-footer"
       copyright={`${currentYear} ${defaultMessage}`}
       links={[
         // {

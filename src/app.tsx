@@ -3,13 +3,11 @@ import {Question, SelectLang} from '@/components/RightContent';
 import {LinkOutlined} from '@ant-design/icons';
 import type {Settings as LayoutSettings} from '@ant-design/pro-components';
 import {SettingDrawer} from '@ant-design/pro-components';
-import type {RunTimeLayoutConfig} from '@umijs/max';
+import type {RequestConfig, RunTimeLayoutConfig} from '@umijs/max';
 import {history, Link} from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
-import {errorConfig} from './requestErrorConfig';
-import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
 import React from 'react';
-import {AvatarDropdown, AvatarName} from './components/RightContent/AvatarDropdown';
+import {AvatarDropdown} from './components/RightContent/AvatarDropdown';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -24,14 +22,14 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser({
-        skipErrorHandler: true,
-      });
-      return msg.data;
-    } catch (error) {
-      history.push(loginPath);
-    }
+    // try {
+    //   const msg = await queryCurrentUser({
+    //     skipErrorHandler: true,
+    //   });
+    //   return msg.data;
+    // } catch (error) {
+    //   history.push(loginPath);
+    // }
     return undefined;
   };
   // 如果不是登录页面，执行
@@ -56,7 +54,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
     actionsRender: () => [<Question key="doc"/>, <SelectLang key="SelectLang"/>],
     avatarProps: {
       src: initialState?.currentUser?.avatar,
-      title: <AvatarName/>,
+      title: '寻爱',
       render: (_, avatarChildren) => {
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
@@ -132,6 +130,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
  * 它基于 axios 和 ahooks 的 useRequest 提供了一套统一的网络请求和错误处理方案。
  * @doc https://umijs.org/docs/max/request#配置
  */
-export const request = {
-  ...errorConfig,
+export const request: RequestConfig = {
+  // 新增自动添加AccessToken的请求前拦截器
+  timeout: 1000
 };

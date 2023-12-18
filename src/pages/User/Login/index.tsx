@@ -1,22 +1,17 @@
 import Logo from '@/assets/logo.svg';
 import GlobalFooter from '@/components/GlobalFooter';
+import { DEFAULT_NAME } from '@/constants';
 import { login } from '@/services/ant-design-pro/api';
-import {
-  LockOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import {
-  LoginForm,
-  ProFormCheckbox,
-  ProFormText,
-} from '@ant-design/pro-components';
+import { Link } from '@@/exports';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
-import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet } from '@umijs/max';
+import { FormattedMessage, Helmet, history, SelectLang, useIntl, useModel } from '@umijs/max';
 import { Alert, message, Tabs } from 'antd';
-import Settings from '../../../../config/defaultSettings';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
-import {DEFAULT_NAME} from "@/constants";
+import Settings from '../../../../config/defaultSettings';
+
 const Lang = () => {
   const langClassName = useEmotionCss(({ token }) => {
     return {
@@ -85,11 +80,12 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (values: API.LoginParams) => {
+  const handleSubmit = async (fields: UserType.UserLoginRequest) => {
+    const hide = message.loading('登录中');
     try {
       // 登录
-      const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      const res = await login({ ...fields });
+      if (res.data) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
@@ -100,9 +96,8 @@ const Login: React.FC = () => {
         history.push(urlParams.get('redirect') || '/');
         return;
       }
-      console.log(msg);
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+      // 重定向到之前页面
+      window.location.href = searchParams.get('redirect') ?? '/';
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
@@ -110,6 +105,8 @@ const Login: React.FC = () => {
       });
       console.log(error);
       message.error(defaultLoginFailureMessage);
+    } finally {
+      hide();
     }
   };
   const { status, type: loginType } = userLoginState;
@@ -138,7 +135,7 @@ const Login: React.FC = () => {
             maxWidth: '75vw',
           }}
           logo={Logo}
-          title= {DEFAULT_NAME}
+          title={DEFAULT_NAME}
           subTitle={intl.formatMessage({ id: '简约干净的恋爱信息展示平台' })}
           initialValues={{
             autoLogin: true,
@@ -173,7 +170,7 @@ const Login: React.FC = () => {
           {type === 'account' && (
             <>
               <ProFormText
-                name="username"
+                name="userAccount"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
@@ -195,7 +192,7 @@ const Login: React.FC = () => {
                 ]}
               />
               <ProFormText.Password
-                name="password"
+                name="userPassword"
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined />,
@@ -214,28 +211,30 @@ const Login: React.FC = () => {
                       />
                     ),
                   },
+                  {
+                    min: 8,
+                    type: 'string',
+                    message: '密码长度不能小于8位',
+                  },
                 ]}
               />
             </>
           )}
-
-          {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
 
           <div
             style={{
               marginBottom: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-            </ProFormCheckbox>
-            <a
+            <Link to="/user/register">新用户注册</Link>
+            <Link
+              to="/"
               style={{
                 float: 'right',
               }}
             >
-              <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
-            </a>
+              返回主页
+            </Link>
           </div>
         </LoginForm>
       </div>
