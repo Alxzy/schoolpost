@@ -4,9 +4,7 @@ import { request } from '@umijs/max';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<{
-    data: API.CurrentUser;
-  }>('/api/currentUser', {
+  return request<BaseResponse<UserType.UserVO>>('/api/user/currentUser', {
     method: 'GET',
     ...(options || {}),
   });
@@ -20,9 +18,21 @@ export async function outLogin(options?: { [key: string]: any }) {
   });
 }
 
-/** 登录接口 POST /api/login/account */
+/** 登录接口 POST /api/user/login */
 export async function login(params: UserType.UserLoginRequest) {
   return request<BaseResponse<UserType.UserVO>>('/api/user/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: params,
+
+  });
+}
+
+/** 注册接口 POST /api/user/register */
+export async function register(params: UserType.UserRegisterRequest) {
+  return request<BaseResponse<Number>>('/api/user/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

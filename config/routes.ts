@@ -11,22 +11,28 @@
  * @doc https://umijs.org/docs/guides/routes
  */
 export default [
+
+  {
+    name: '首页',
+    path: '/',
+    component: './Index',
+  },
+
   {
     path: '/user',
     layout: false,
     routes: [
       {
-        name: 'login',
+        name: '用户登录',
         path: '/user/login',
         component: './User/Login',
       },
+      {
+        name: '用户注册',
+        path: '/user/register',
+        component: './User/Register',
+      },
     ],
-  },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
   },
   {
     path: '/admin',
@@ -51,10 +57,7 @@ export default [
     path: '/list',
     component: './TableList',
   },
-  {
-    path: '/',
-    redirect: '/welcome',
-  },
+
   {
     path: '*',
     layout: false,

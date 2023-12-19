@@ -6,3 +6,9 @@ interface BaseResponse<T> {
   data: T;
   message?: string;
 }
+/**
+ * 全局初始化状态
+ */
+interface InitialState {
+  loginUser?: UserType.UserVO;
+}
