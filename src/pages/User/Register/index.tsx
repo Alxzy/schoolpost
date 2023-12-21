@@ -10,6 +10,7 @@ import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { FormattedMessage, Helmet, SelectLang } from '@umijs/max';
 import { message, Tabs } from 'antd';
 import React, { useState } from 'react';
+// @ts-ignore
 import { useNavigate } from 'umi';
 import Settings from '../../../../config/defaultSettings';
 

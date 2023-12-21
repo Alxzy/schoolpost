@@ -10,11 +10,16 @@ export async function currentUser(options?: { [key: string]: any }) {
   });
 }
 
-/** 退出登录接口 POST /api/login/outLogin */
-export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/login/outLogin', {
+/**
+ * 用户注销
+ */
+export async function userLogout() {
+  return request<BaseResponse<boolean>>('/api/user/logout', {
     method: 'POST',
-    ...(options || {}),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: {},
   });
 }
 
@@ -26,7 +31,6 @@ export async function login(params: UserType.UserLoginRequest) {
       'Content-Type': 'application/json',
     },
     data: params,
-
   });
 }
 
@@ -38,7 +42,6 @@ export async function register(params: UserType.UserRegisterRequest) {
       'Content-Type': 'application/json',
     },
     data: params,
-
   });
 }
 

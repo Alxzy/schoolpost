@@ -1,0 +1,56 @@
+.banner {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+  //background: url("https://img1.baidu.com/it/u=2551225855,1947719367&fm=253&fmt=auto&app=138&f=GIF?w=889&h=500") /**fixed*/;
+  background: url('../../assets/cxk1.png') fixed;
+  background-position-x: center;
+  background-position-y: center;
+  background-size: cover !important;
+}
+
+.banner::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  background: #000;
+  opacity: 0.5;
+  content: '';
+}
+
+.search-wrapper {
+  width: 60vw;
+  min-width: 320px;
+  max-width: 800px;
+}
+
+.search-wrapper .title {
+  margin-bottom: 0 !important;
+  color: white !important;
+  text-align: center;
+}
+
+.search-wrapper .ant-pro-form-light-filter-container {
+  justify-content: space-between;
+}
+
+.search-wrapper .ant-form-item-control {
+  background: #fff;
+}
+
+.post-list-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.post-list-wrapper .ant-list-item {
+  padding-right: 0;
+  padding-left: 0;
+  font-size: 16px;
+}

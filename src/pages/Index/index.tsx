@@ -1,7 +1,9 @@
-import { PageContainer } from '@ant-design/pro-components';
+import { LightFilter, PageContainer, ProFormSelect } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
-import { Card, theme } from 'antd';
+import { Card, Space, theme, Typography } from 'antd';
+import Search from 'antd/es/input/Search';
 import React from 'react';
+import './index.less';
 
 /**
  * 每个单独的卡片，为了复用样式抽成了组件
@@ -87,77 +89,106 @@ const Index: React.FC = () => {
   const { token } = theme.useToken();
   const { initialState } = useModel('@@initialState');
   return (
-    <PageContainer>
-      <Card
-        style={{
-          borderRadius: 8,
-        }}
-        bodyStyle={{
-          backgroundImage:
-            initialState?.settings?.navTheme === 'realDark'
-              ? 'background-image: linear-gradient(75deg, #1A1B1F 0%, #191C1F 100%)'
-              : 'background-image: linear-gradient(75deg, #FBFDFF 0%, #F5F7FF 100%)',
-        }}
-      >
-        <div
+    <div id="indexPage">
+      <div className="banner">
+        <Space size="large" direction="vertical" className="search-wrapper">
+          <Typography.Title level={2} className="title">
+            快来寻找你的另一半
+          </Typography.Title>
+          <Search
+            size="large"
+            placeholder="你理想的另一半的样子?"
+            allowClear
+            // TODO 帖子模块 搜索帖子
+            // onSearch={}
+          />
+          <LightFilter
+            style={{
+              marginBlockStart: '40px',
+            }}
+            bordered
+            // TODO 标签模块 设置搜索参数
+            // onFinish={}
+          >
+            <ProFormSelect name="job" label="职业" showSearch required />
+            <ProFormSelect name="place" label="地点" showSearch required />
+            <ProFormSelect name="education" label="学历" showSearch required />
+            <ProFormSelect name="loveExp" label="情感经历" showSearch required />
+          </LightFilter>
+        </Space>
+      </div>
+      <PageContainer>
+        <Card
           style={{
-            backgroundPosition: '100% -30%',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '274px auto',
+            borderRadius: 8,
+          }}
+          bodyStyle={{
             backgroundImage:
-              "url('https://gw.alipayobjects.com/mdn/rms_a9745b/afts/img/A*BuFmQqsB2iAAAAAAAAAAAAAAARQnAQ')",
+              initialState?.settings?.navTheme === 'realDark'
+                ? 'background-image: linear-gradient(75deg, #1A1B1F 0%, #191C1F 100%)'
+                : 'background-image: linear-gradient(75deg, #FBFDFF 0%, #F5F7FF 100%)',
           }}
         >
           <div
             style={{
-              fontSize: '20px',
-              color: token.colorTextHeading,
+              backgroundPosition: '100% -30%',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '274px auto',
+              backgroundImage:
+                "url('https://gw.alipayobjects.com/mdn/rms_a9745b/afts/img/A*BuFmQqsB2iAAAAAAAAAAAAAAARQnAQ')",
             }}
           >
-            欢迎使用 Ant Design Pro
+            <div
+              style={{
+                fontSize: '20px',
+                color: token.colorTextHeading,
+              }}
+            >
+              欢迎使用 Ant Design Pro
+            </div>
+            <p
+              style={{
+                fontSize: '14px',
+                color: token.colorTextSecondary,
+                lineHeight: '22px',
+                marginTop: 16,
+                marginBottom: 32,
+                width: '65%',
+              }}
+            >
+              Ant Design Pro 是一个整合了 umi，Ant Design 和 ProComponents
+              的脚手架方案。致力于在设计规范和基础组件的基础上，继续向上构建，提炼出典型模板/业务组件/配套设计资源，进一步提升企业级中后台产品设计研发过程中的『用户』和『设计者』的体验。
+            </p>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 16,
+              }}
+            >
+              <InfoCard
+                index={1}
+                href="https://umijs.org/docs/introduce/introduce"
+                title="了解 umi"
+                desc="umi 是一个可扩展的企业级前端应用框架,umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。"
+              />
+              <InfoCard
+                index={2}
+                title="了解 ant design"
+                href="https://ant.design"
+                desc="antd 是基于 Ant Design 设计体系的 React UI 组件库，主要用于研发企业级中后台产品。"
+              />
+              <InfoCard
+                index={3}
+                title="了解 Pro Components"
+                href="https://procomponents.ant.design"
+                desc="ProComponents 是一个基于 Ant Design 做了更高抽象的模板组件，以 一个组件就是一个页面为开发理念，为中后台开发带来更好的体验。"
+              />
+            </div>
           </div>
-          <p
-            style={{
-              fontSize: '14px',
-              color: token.colorTextSecondary,
-              lineHeight: '22px',
-              marginTop: 16,
-              marginBottom: 32,
-              width: '65%',
-            }}
-          >
-            Ant Design Pro 是一个整合了 umi，Ant Design 和 ProComponents
-            的脚手架方案。致力于在设计规范和基础组件的基础上，继续向上构建，提炼出典型模板/业务组件/配套设计资源，进一步提升企业级中后台产品设计研发过程中的『用户』和『设计者』的体验。
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 16,
-            }}
-          >
-            <InfoCard
-              index={1}
-              href="https://umijs.org/docs/introduce/introduce"
-              title="了解 umi"
-              desc="umi 是一个可扩展的企业级前端应用框架,umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。"
-            />
-            <InfoCard
-              index={2}
-              title="了解 ant design"
-              href="https://ant.design"
-              desc="antd 是基于 Ant Design 设计体系的 React UI 组件库，主要用于研发企业级中后台产品。"
-            />
-            <InfoCard
-              index={3}
-              title="了解 Pro Components"
-              href="https://procomponents.ant.design"
-              desc="ProComponents 是一个基于 Ant Design 做了更高抽象的模板组件，以 一个组件就是一个页面为开发理念，为中后台开发带来更好的体验。"
-            />
-          </div>
-        </div>
-      </Card>
-    </PageContainer>
+        </Card>
+      </PageContainer>
+    </div>
   );
 };
 

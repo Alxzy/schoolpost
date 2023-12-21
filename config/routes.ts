@@ -11,7 +11,6 @@
  * @doc https://umijs.org/docs/guides/routes
  */
 export default [
-
   {
     name: '首页',
     path: '/',
@@ -51,12 +50,12 @@ export default [
       },
     ],
   },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-  },
+  // {
+  //   name: 'list.table-list',
+  //   icon: 'table',
+  //   path: '/list',
+  //   component: './TableList',
+  // },
 
   {
     path: '*',
