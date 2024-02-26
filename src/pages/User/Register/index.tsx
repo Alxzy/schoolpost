@@ -2,7 +2,7 @@
 import Logo from '@/assets/logo.svg';
 import GlobalFooter from '@/components/GlobalFooter';
 import { DEFAULT_NAME } from '@/constants';
-import { register } from '@/services/ant-design-pro/api';
+import { register } from '@/services/userService';
 import { Link } from '@@/exports';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormText } from '@ant-design/pro-components';

@@ -2,13 +2,13 @@
 import Logo from '@/assets/logo.svg';
 import GlobalFooter from '@/components/GlobalFooter';
 import { DEFAULT_NAME } from '@/constants';
-import { login} from '@/services/ant-design-pro/api';
-import {Link, useSearchParams} from '@@/exports';
+import { login } from '@/services/userService';
+import { Link, useSearchParams } from '@@/exports';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormText } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
-import { FormattedMessage, Helmet, SelectLang,useModel } from '@umijs/max';
-import {  message, Tabs } from 'antd';
+import { FormattedMessage, Helmet, SelectLang, useModel } from '@umijs/max';
+import { message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import Settings from '../../../../config/defaultSettings';
 
@@ -51,7 +51,6 @@ const Login: React.FC = () => {
     };
   });
 
-
   /**
    * 用户登录
    * @param fields
@@ -70,7 +69,7 @@ const Login: React.FC = () => {
         // 重定向到之前页面
         window.location.href = searchParams.get('redirect') ?? '/';
         // 这个 else 是为了方便展示错误信息
-      }else{
+      } else {
         message.error(res.message);
       }
     } catch (error: any) {
@@ -80,13 +79,11 @@ const Login: React.FC = () => {
     }
   };
 
-
   return (
     <div className={containerClassName}>
       <Helmet>
         <title>
-          {'登录页'}
-          - {Settings.title}
+          {'登录页'}- {Settings.title}
         </title>
       </Helmet>
       <Lang />
@@ -103,8 +100,7 @@ const Login: React.FC = () => {
           }}
           logo={Logo}
           title={DEFAULT_NAME}
-          subTitle='简约干净的恋爱信息展示平台'
-
+          subTitle="简约干净的恋爱信息展示平台"
           onFinish={async (formData) => {
             await doUserLogin(formData);
           }}

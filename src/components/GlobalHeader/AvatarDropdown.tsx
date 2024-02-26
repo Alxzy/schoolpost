@@ -1,4 +1,4 @@
-import { userLogout } from '@/services/ant-design-pro/api';
+import { userLogout } from '@/services/userService';
 import { Link } from '@@/exports';
 import { AntDesignOutlined, LogoutOutlined } from '@ant-design/icons';
 import { history, useModel } from '@umijs/max';
@@ -7,6 +7,8 @@ import classNames from 'classnames';
 import { stringify } from 'querystring';
 import React from 'react';
 import styles = module;
+// @ts-ignore
+import defaultAvatar from '@/assets/banner.jpg';
 
 /**
  * 头像下拉框
@@ -61,9 +63,9 @@ export const AvatarDropdown: React.FC = () => {
     <Dropdown overlayClassName={classNames(styles.container)} overlay={menuHeaderDropdown}>
       <div className={`${styles.action} ${styles.account}`}>
         <Avatar
-          size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
+          size={{ xs: 24, sm: 32, md: 40, lg: 60, xl: 60 }}
           icon={<AntDesignOutlined />}
-          src={loginUser.userAvatar}
+          src={loginUser.userAvatar || defaultAvatar}
           alt="avatar"
         />
         {/*<span>{loginUser.userName?.[0]}</span>*/}

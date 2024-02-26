@@ -33,7 +33,6 @@ declare namespace UserType {
     updateTime?: Date;
   }
 
-
   /**
    * 用户注册请求
    */
@@ -51,4 +50,50 @@ declare namespace UserType {
     userPassword: string;
   }
 
+  /**
+   * 添加用户请求
+   */
+  interface UserAddRequest {
+    userName: string;
+    userAccount: string;
+    userAvatar?: string;
+    gender?: UserGenderEnum;
+    userRole: string;
+    userPassword: string;
+  }
+
+  /**
+   * 删除用户请求
+   */
+  interface UserDeleteRequest {
+    id: number;
+  }
+
+  /**
+   * 用户更新(修改)请求
+   */
+  interface UserUpdateRequest {
+    id: number;
+    userName?: string;
+    userAccount?: string;
+    userAvatar?: string;
+    gender?: UserGenderEnum;
+    userRole?: string;
+    // userPassword?: string;  不能乱改别人密码！
+  }
+
+  /**
+   * 用户查询请求
+   */
+  interface UserQueryRequest extends PageRequest {
+    id?: number;
+    userName?: string;
+    userAccount?: string;
+    userAvatar?: string;
+    gender?: UserGenderEnum;
+    userRole?: string;
+    // userPassword?: string;  不能乱改别人密码！
+    createTime?: Date;
+    updateTime?: Date;
+  }
 }

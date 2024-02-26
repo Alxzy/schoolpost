@@ -14,8 +14,10 @@ export default [
   {
     name: '首页',
     path: '/',
+    // access: 'canUser',// 必须登录才能访问首页,不建议加
     component: './Index',
   },
+  //todo 寻爱页面的组件路由和路径
 
   {
     path: '/user',
@@ -35,13 +37,25 @@ export default [
   },
   {
     path: '/admin',
-    name: 'admin',
-    icon: 'crown',
+    name: '管理',
+    // icon: 'crown', 图标
     access: 'canAdmin',
+    flatMenu: true, // 子路由将在菜单中平铺显示
     routes: [
       {
-        path: '/admin',
-        redirect: '/admin/sub-page',
+        name: '用户管理',
+        path: '/admin/user',
+        component: './Admin/User',
+      },
+      {
+        name: '帖子管理',
+        path: '/admin/post',
+        component: './Admin/Post',
+      },
+      {
+        name: '标签管理',
+        path: '/admin/tag',
+        component: './Admin/Tag',
       },
       {
         path: '/admin/sub-page',

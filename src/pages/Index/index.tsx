@@ -1,8 +1,10 @@
+import { listPostByPage, postDoThumb } from '@/services/postService';
+import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { LightFilter, PageContainer, ProFormSelect } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
-import { Card, Space, theme, Typography } from 'antd';
+import { Button, Divider, Image, List, message, Select, Space, Tag, Typography } from 'antd';
 import Search from 'antd/es/input/Search';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './index.less';
 
 /**
@@ -10,84 +12,91 @@ import './index.less';
  * @param param0
  * @returns
  */
-const InfoCard: React.FC<{
-  title: string;
-  index: number;
-  desc: string;
-  href: string;
-}> = ({ title, href, index, desc }) => {
-  const { useToken } = theme;
 
-  const { token } = useToken();
+// 默认分页大小
+const DEFAULT_PAGE_SIZE = 10;
 
-  return (
-    <div
-      style={{
-        backgroundColor: token.colorBgContainer,
-        boxShadow: token.boxShadow,
-        borderRadius: '8px',
-        fontSize: '14px',
-        color: token.colorTextSecondary,
-        lineHeight: '22px',
-        padding: '16px 19px',
-        minWidth: '220px',
-        flex: 1,
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          gap: '4px',
-          alignItems: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: 48,
-            height: 48,
-            lineHeight: '22px',
-            backgroundSize: '100%',
-            textAlign: 'center',
-            padding: '8px 16px 16px 12px',
-            color: '#FFF',
-            fontWeight: 'bold',
-            backgroundImage:
-              "url('https://gw.alipayobjects.com/zos/bmw-prod/daaf8d50-8e6d-4251-905d-676a24ddfa12.svg')",
-          }}
-        >
-          {index}
-        </div>
-        <div
-          style={{
-            fontSize: '16px',
-            color: token.colorText,
-            paddingBottom: 8,
-          }}
-        >
-          {title}
-        </div>
-      </div>
-      <div
-        style={{
-          fontSize: '14px',
-          color: token.colorTextSecondary,
-          textAlign: 'justify',
-          lineHeight: '22px',
-          marginBottom: 8,
-        }}
-      >
-        {desc}
-      </div>
-      <a href={href} target="_blank" rel="noreferrer">
-        了解更多 {'>'}
-      </a>
-    </div>
-  );
-};
+// 主页
 
 const Index: React.FC = () => {
-  const { token } = theme.useToken();
+  const [postList, setPostList] = useState<PostType.PostVO[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const initSearchParams: PostType.PostQueryRequest = {
+    current: 1,
+    pageSize: DEFAULT_PAGE_SIZE,
+    // 只展示已审核通过的
+    reviewStatus: 1,
+    sortField: 'createTime',
+    sortOrder: 'descend',
+  };
+  const [searchParams, setSearchParams] = useState<PostType.PostQueryRequest>(initSearchParams);
+  // const [reportModalVisible, setReportModalVisible] = useState(false);
+  // const [reportedId, setReportedId] = useState(0);
   const { initialState } = useModel('@@initialState');
+  const tagMap = initialState?.tagMap || {};
+
+  /**
+   * 根据分类获取标签选项数组
+   * @param category
+   */
+  const getOptions = (category: string) => {
+    if (!category || !tagMap[category]) {
+      return [];
+    }
+    return tagMap[category].map((tag) => {
+      return {
+        value: tag.tagName,
+        label: tag.tagName,
+      };
+    });
+  };
+
+  /**
+   * 点赞 / 取消点赞
+   * @param post
+   * @param index
+   */
+  const doThumb = async (post: PostType.PostVO) => {
+    try {
+      const res = await postDoThumb({ postId: post.id });
+      const changeThumbNum = res.data;
+      post.hasThumb = !post.hasThumb;
+      post.thumbNum += changeThumbNum;
+      setPostList([...postList]);
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  };
+
+  // 加载数据
+  useEffect(() => {
+    setLoading(true);
+    listPostByPage(searchParams)
+      .then((res) => {
+        setPostList(res.data.records);
+        setTotal(res.data.total);
+      })
+      .catch((e) => {
+        message.error('加载失败，' + e.message);
+      })
+      .finally(() => setLoading(false));
+  }, [searchParams]);
+
+  const sortSelect = (
+    <Select
+      size="large"
+      placeholder="排序"
+      defaultValue="createTime"
+      onChange={(value: string) => {
+        setSearchParams({ ...searchParams, sortField: value });
+      }}
+    >
+      <Select.Option value="createTime">最新</Select.Option>
+      <Select.Option value="thumbNum">人气</Select.Option>
+    </Select>
+  );
+
   return (
     <div id="indexPage">
       <div className="banner">
@@ -99,95 +108,131 @@ const Index: React.FC = () => {
             size="large"
             placeholder="你理想的另一半的样子?"
             allowClear
-            // TODO 帖子模块 搜索帖子
-            // onSearch={}
+            onSearch={(value) => {
+              setSearchParams({
+                ...searchParams,
+                ...initSearchParams,
+                content: value,
+              });
+            }}
           />
           <LightFilter
-            style={{
-              marginBlockStart: '40px',
-            }}
             bordered
-            // TODO 标签模块 设置搜索参数
-            // onFinish={}
+            onFinish={async (values) => {
+              setSearchParams({
+                content: searchParams.content,
+                ...initSearchParams,
+                ...values,
+              });
+            }}
           >
-            <ProFormSelect name="job" label="职业" showSearch required />
-            <ProFormSelect name="place" label="地点" showSearch required />
-            <ProFormSelect name="education" label="学历" showSearch required />
-            <ProFormSelect name="loveExp" label="情感经历" showSearch required />
+            <ProFormSelect
+              options={getOptions('职业')}
+              name="job"
+              label="职业"
+              required
+              showSearch
+            />
+            <ProFormSelect
+              options={getOptions('地点')}
+              name="place"
+              label="地点"
+              required
+              showSearch
+            />
+            <ProFormSelect
+              options={getOptions('学历')}
+              name="education"
+              label="学历"
+              required
+              showSearch
+            />
+            <ProFormSelect
+              options={getOptions('爱好')}
+              name="hobby"
+              label="爱好"
+              required
+              showSearch
+            />
+            <ProFormSelect
+              options={getOptions('感情经历')}
+              name="loveExp"
+              label="感情经历"
+              required
+              showSearch
+            />
           </LightFilter>
         </Space>
       </div>
-      <PageContainer>
-        <Card
-          style={{
-            borderRadius: 8,
+
+      <PageContainer
+        title={`爱情信号（${total}）`}
+        className="post-list-wrapper"
+        extra={sortSelect}
+      >
+        <List
+          itemLayout="vertical"
+          size="large"
+          loading={loading}
+          pagination={{
+            total,
+            onChange: (current) => {
+              setSearchParams({ ...searchParams, current });
+              window.scrollTo({
+                top: 0,
+              });
+            },
+            pageSize: DEFAULT_PAGE_SIZE,
           }}
-          bodyStyle={{
-            backgroundImage:
-              initialState?.settings?.navTheme === 'realDark'
-                ? 'background-image: linear-gradient(75deg, #1A1B1F 0%, #191C1F 100%)'
-                : 'background-image: linear-gradient(75deg, #FBFDFF 0%, #F5F7FF 100%)',
-          }}
-        >
-          <div
-            style={{
-              backgroundPosition: '100% -30%',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: '274px auto',
-              backgroundImage:
-                "url('https://gw.alipayobjects.com/mdn/rms_a9745b/afts/img/A*BuFmQqsB2iAAAAAAAAAAAAAAARQnAQ')",
-            }}
-          >
-            <div
-              style={{
-                fontSize: '20px',
-                color: token.colorTextHeading,
-              }}
-            >
-              欢迎使用 Ant Design Pro
-            </div>
-            <p
-              style={{
-                fontSize: '14px',
-                color: token.colorTextSecondary,
-                lineHeight: '22px',
-                marginTop: 16,
-                marginBottom: 32,
-                width: '65%',
-              }}
-            >
-              Ant Design Pro 是一个整合了 umi，Ant Design 和 ProComponents
-              的脚手架方案。致力于在设计规范和基础组件的基础上，继续向上构建，提炼出典型模板/业务组件/配套设计资源，进一步提升企业级中后台产品设计研发过程中的『用户』和『设计者』的体验。
-            </p>
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 16,
-              }}
-            >
-              <InfoCard
-                index={1}
-                href="https://umijs.org/docs/introduce/introduce"
-                title="了解 umi"
-                desc="umi 是一个可扩展的企业级前端应用框架,umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。"
-              />
-              <InfoCard
-                index={2}
-                title="了解 ant design"
-                href="https://ant.design"
-                desc="antd 是基于 Ant Design 设计体系的 React UI 组件库，主要用于研发企业级中后台产品。"
-              />
-              <InfoCard
-                index={3}
-                title="了解 Pro Components"
-                href="https://procomponents.ant.design"
-                desc="ProComponents 是一个基于 Ant Design 做了更高抽象的模板组件，以 一个组件就是一个页面为开发理念，为中后台开发带来更好的体验。"
-              />
-            </div>
-          </div>
-        </Card>
+          dataSource={postList}
+          renderItem={(post, index) => (
+            <List.Item key={index} extra={<Image height={200} src={post.photo} />}>
+              <Space direction="vertical">
+                <div style={{ marginBottom: '1em' }}>
+                  <Tag>{post.age} 岁</Tag>
+                  <Tag>{post.gender ? '女' : '男'}</Tag>
+                  <Tag>{post.job}</Tag>
+                  <Tag>{post.education}</Tag>
+                  <Tag>{post.place}</Tag>
+                  <Tag>{post.hobby}</Tag>
+                  <Tag>{post.loveExp}</Tag>
+                  <Tag>联系方式: {post.contact}</Tag>
+                </div>
+                <Typography.Paragraph ellipsis={{ rows: 12, expandable: true, symbol: '展开' }}>
+                  {post.content}
+                </Typography.Paragraph>
+                <Space split={<Divider type="vertical" />} style={{ fontSize: 14 }}>
+                  <Typography.Text type="secondary">
+                    {post.createTime.toString().split('T')[0]}
+                  </Typography.Text>
+                  <Button type="text" onClick={() => doThumb(post)}>
+                    <Space>
+                      {post.hasThumb ? <LikeFilled /> : <LikeOutlined />}
+                      {post.thumbNum}
+                    </Space>
+                  </Button>
+                  <Button
+                    type="text"
+                    // onClick={() => {
+                    //   setReportedId(post.id);
+                    //   setReportModalVisible(true);
+                    // }}
+                  >
+                    反馈
+                  </Button>
+                </Space>
+              </Space>
+            </List.Item>
+          )}
+        />
       </PageContainer>
+      {/*<ReportModal*/}
+      {/*  visible={reportModalVisible}*/}
+      {/*  reportedId={reportedId}*/}
+      {/*  onClose={() => {*/}
+      {/*    setReportModalVisible(false);*/}
+      {/*  }}*/}
+      {/*/>*/}
     </div>
   );
 };
